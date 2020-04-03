@@ -230,8 +230,8 @@ healthcheck(callback) {
             var type = typeof results;
             if (type == "object") {
                 if ('body' in results) {
-                    let jsonObject = JSON.parse(results.body);
-                    resultsArray = jsonObject.result;
+                    let jsonBody = JSON.parse(results.body);
+                    resultsArray = jsonBody.result;
                     let validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
                     resultsArray.forEach(element => { 
                         element = this.generalizeReturnTicketProperties(element, validKeys);
@@ -264,17 +264,19 @@ healthcheck(callback) {
     };
     this.connector.sendRequest(callOptions, (results, error) => {
         var type = typeof results;
-        let jsonObject = null;
+        let jsonResult = null;
         if (results) {
             if (type == "object") {
                 if ('body' in results) {
-                    jsonObject = JSON.parse(results.body);
-                    validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
-                    jsonObject = this.generalizeReturnTicketProperties(jsonObject, validKeys);
+                    let jsonBody = JSON.parse(results.body);
+                    jsonResult = jsonBody.result;
+                    let validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
+                    log.error(`postRecord jsonObject before=${JSON.stringify(jsonResult)}`);
+                    jsonResult = this.generalizeReturnTicketProperties(jsonResult, validKeys);
                 }
             }
         }
-        callback(jsonObject, error);
+        callback(jsonResult, error);
     });
   }
 }
