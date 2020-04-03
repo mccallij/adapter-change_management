@@ -178,33 +178,6 @@ healthcheck(callback) {
   }
 
   /**
- * @memberof ServiceNowConnector
- * @method generalizeReturnTicketProperties
- * @description Remove unneeded ServiceNow change ticket properties and generalize number and sys_id
- *
- * @param {object} ticketJson- Ticket response in JSON
- * @param {array} keysToKeep Array of change ticket keys that need to be retained
- *
- * @return {object} Generalized ticket 
- */
- generalizeReturnTicketProperties(ticketJson, keysToKeep) {
-    Object.keys(ticketJson).forEach((key) => {
-        if (keysToKeep.includes(key)) {
-            if (key == 'number') {
-                ticketJson["change_ticket_number"] = ticketJson["number"];
-                delete ticketJson["number"];
-            } else if (key == 'sys_id') {
-                ticketJson["change_ticket_key"] = ticketJson["sys_id"];
-                delete ticketJson["sys_id"];
-            }
-        } else {
-            delete ticketJson[key]);
-        }
-    }
-    return ticketJson;
- }
-
-  /**
    * @memberof ServiceNowAdapter
    * @method getRecord
    * @summary Get ServiceNow Record
@@ -224,20 +197,7 @@ healthcheck(callback) {
         method: 'GET',
         query: 'sysparm_limit=1'
     };
-    this.connector.sendRequest(callOptions, (results, error) => {
-        var type = typeof results;
-        if (type == "object") {
-            if ('body' in results) {
-                let jsonString = JSON.stringify(results.body);
-                resultsArray = jsonString.result;
-                validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
-                resultsArray.forEach(element => { 
-                    element = generalizeReturnTicketProperties(element, validKeys);
-                }
-            }
-        }
-        callback(resultsArray, error));
-    }
+    this.connector.sendRequest(callOptions, (results, error) => callback(results, error));
   }
 
   /**
@@ -259,16 +219,7 @@ healthcheck(callback) {
     const callOptions = {
         method: 'POST'
     };
-    this.connector.sendRequest(callOptions, (results, error) => {
-        var type = typeof results;
-        if (type == "object") {
-            if ('body' in results) {
-                let bodyJson = JSON.stringify(results.body);
-                validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
-                bodyJson = generalizeReturnTicketProperties(bodyJson, validKeys);
-            }
-        }
-        callback(bodyJson, error));
+    this.connector.sendRequest(callOptions, (results, error) => callback(results, error));
   }
 }
 

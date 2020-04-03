@@ -130,9 +130,9 @@ sendRequest(callOptions, callback) {
   // Initialize return arguments for callback
   let uri;
   if (callOptions.query)
-    uri = this.constructUri(callOptions.serviceNowTable, callOptions.query);
+    uri = this.constructUri(this.options.serviceNowTable, callOptions.query);
   else
-    uri = this.constructUri(callOptions.serviceNowTable);
+    uri = this.constructUri(this.options.serviceNowTable);
   /**
    * You must build the requestOptions object.
    * This is not a simple copy/paste of the requestOptions object
