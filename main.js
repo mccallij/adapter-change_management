@@ -198,9 +198,9 @@ healthcheck(callback) {
                 delete ticketJson["sys_id"];
             }
         } else {
-            delete ticketJson[key]);
+            delete ticketJson[key];
         }
-    }
+    });
     return ticketJson;
  }
 
@@ -225,19 +225,22 @@ healthcheck(callback) {
         query: 'sysparm_limit=1'
     };
     this.connector.sendRequest(callOptions, (results, error) => {
-        var type = typeof results;
-        if (type == "object") {
-            if ('body' in results) {
-                let jsonString = JSON.stringify(results.body);
-                resultsArray = jsonString.result;
-                validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
-                resultsArray.forEach(element => { 
-                    element = generalizeReturnTicketProperties(element, validKeys);
+        let resultsArray = [];
+        if (results) {
+            var type = typeof results;
+            if (type == "object") {
+                if ('body' in results) {
+                    let jsonObject = JSON.parse(results.body);
+                    resultsArray = jsonObject.result;
+                    let validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
+                    resultsArray.forEach(element => { 
+                        element = this.generalizeReturnTicketProperties(element, validKeys);
+                    });
                 }
             }
         }
-        callback(resultsArray, error));
-    }
+        callback(resultsArray, error);
+    });
   }
 
   /**
@@ -261,14 +264,18 @@ healthcheck(callback) {
     };
     this.connector.sendRequest(callOptions, (results, error) => {
         var type = typeof results;
-        if (type == "object") {
-            if ('body' in results) {
-                let bodyJson = JSON.stringify(results.body);
-                validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
-                bodyJson = generalizeReturnTicketProperties(bodyJson, validKeys);
+        let jsonObject = null;
+        if (results) {
+            if (type == "object") {
+                if ('body' in results) {
+                    jsonObject = JSON.parse(results.body);
+                    validKeys = [ 'number', 'active', 'priority', 'description', 'work_start', 'work_end', 'sys_id' ];
+                    jsonObject = this.generalizeReturnTicketProperties(jsonObject, validKeys);
+                }
             }
         }
-        callback(bodyJson, error));
+        callback(jsonObject, error);
+    });
   }
 }
 
